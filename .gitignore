@@ -56,3 +56,4 @@ freeline_project_description.json
 secret*.json
 *.test.js
 .idea
+.next
