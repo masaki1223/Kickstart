@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { Card, Button } from 'semantic-ui-react'
-import web3 from '../ethereum/web3.js';
 import factory from '../ethereum/factory';
-import Layout from '../components/Layout.js';
 import { Link } from '../routes';
+// **components**
+import Layout from '../components/Layout.js';
 
 class CampaignIndex extends Component {
+    // get props before server rendering
     static async getInitialProps() {
         const campaigns = await factory.methods.getDeployedCampaigns().call();
         return { campaigns };
