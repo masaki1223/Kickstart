@@ -7,30 +7,38 @@ import { Router } from '../routes';
 class ContributeForm extends Component {
     state = {
         value: '',
+        errorMessage: '',
+        success: false,
         loading: false
     }
 
     onSubmit = async event => {
         event.preventDefault();
         const campaign = Campaign(this.props.address);
+        this.setState({ loading: true, errorMessage: '', success: false });
 
         try {
             const accounts = await web3.eth.getAccounts();
-            if(accounts[0] == this.props.manager) { console.log('You cannot contribute to your own campaign!');}
-            this.setState({ loading: true })
-            await campaign.methods.contribute().send({
-                from: accounts[0],
-                value: web3.utils.toWei(this.state.value, 'ether')
-            });
-            Router.pushRoute(`/campaigns/${this.props.address}`);
-            this.setState({ loading: false });
+            if (accounts[0] !== this.props.manager) {
+                await campaign.methods.contribute().send({
+                    from: accounts[0],
+                    value: web3.utils.toWei(this.state.value, 'ether')
+                });
+                Router.pushRoute(`/campaigns/${this.props.address}`);
+                this.setState({ success: true });
+            } else {
+                this.setState({ errorMessage: "You cannot contribute your own campaign!"});
+            }
+
         } catch (err) {
-            console.log(err);
+            this.setState({ errorMessage: err.message })
         }
-    }
+        this.setState({ loading: false, value: '' });
+    };
+
     render() {
         return (
-            <Form onSubmit={this.onSubmit}>
+            <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage} success={this.state.success}>
                 <Form.Field>
                     <label>Amount to Contribute</label>
                     <Input
@@ -40,9 +48,9 @@ class ContributeForm extends Component {
                         labelPosition="right"
                     />
                 </Form.Field>
-                <Button primary loading={this.state.loading} disabled={this.state.loading}>
-                    Contribute!
-                </Button>
+                <Button primary loading={this.state.loading} disabled={this.state.loading}>Contribute!</Button>
+                <Message error header="Oops!" content={this.state.errorMessage}/>
+                <Message success header="Successful Transaction!" content={"Your contribution has been successfully confirmed!"}/>
             </Form>
         );
 
