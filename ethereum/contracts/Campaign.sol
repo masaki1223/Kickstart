@@ -17,7 +17,7 @@ contract Campaign{
 struct Request {
 string description;
 uint value;
-address recepient;
+address recipient;
 bool complete;
 mapping(address => bool) approved;
 uint approvalCount;
@@ -53,7 +53,7 @@ function createRequest(string _description, uint _value, address _recipient) pub
 Request memory newRequest = Request({
 description: _description,
 value: _value,
-recepient: _recipient,
+recipient: _recipient,
 complete: false,
 approvalCount: 0
 });
@@ -75,7 +75,7 @@ request.approvalCount++;
 function finalizeRequest(uint _index) public onlyManager {
 Request storage request = requests[_index];
 require(!request.complete && request.approvalCount > (approversCount/2));
-request.recepient.transfer(request.value);
+request.recipient.transfer(request.value);
 request.complete = true;
 }
 

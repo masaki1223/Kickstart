@@ -16,7 +16,7 @@ class NewRequest extends Component {
         loading: false
     }
 
-    static async getInitialProps(props) {
+    static getInitialProps(props) {
         const { address } = props.query;
         return { address };
     }
@@ -27,7 +27,6 @@ class NewRequest extends Component {
         this.setState({ loading: true, errorMessage: '', success: false });
 
         try {
-            console.log(this.state.value, this.state.description, this.state.recipient);
             const accounts = await web3.eth.getAccounts();
             await campaign.methods.createRequest(
                 description, web3.utils.toWei(value, 'ether'), recipient
